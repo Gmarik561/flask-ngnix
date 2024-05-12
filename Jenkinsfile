@@ -9,9 +9,9 @@ pipeline {
         stage('Build and Push Flask Docker Image') {
             steps {
                 script {
-                    docker.build('myflaskapp')
-                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
-                        docker.image('myflaskapp').push('latest')
+                    sudo docker.build('myflaskapp')
+                    sudo docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
+                        sudo docker.image('myflaskapp').push('latest')
                     }
                 }
             }
@@ -22,9 +22,9 @@ pipeline {
                     sh 'cp /path/to/default/nginx/Dockerfile .'
                     sh 'echo "proxy_pass http://myflaskapp:5000/;" >> Dockerfile'
                     sh 'echo "add_header X-Forwarded-For $remote_addr;" >> Dockerfile'
-                    docker.build('mynginxapp', '.')
-                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
-                        docker.image('mynginxapp').push('latest')
+                    sudo docker.build('mynginxapp', '.')
+                    sudo docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
+                        sudo docker.image('mynginxapp').push('latest')
                     }
                 }
             }
@@ -32,8 +32,8 @@ pipeline {
         stage('Run Docker Containers and Test Communication') {
             steps {
                 script {
-                    docker.image('myflaskapp').run('-p 5000:5000', 'myflaskapp')
-                    docker.image('mynginxapp').run('-p 80:80', 'mynginxapp')
+                    sudo docker.image('myflaskapp').run('-p 5000:5000', 'myflaskapp')
+                    sudo docker.image('mynginxapp').run('-p 80:80', 'mynginxapp')
                     sleep 60 // Wait for containers to start
                     sh 'curl http://localhost/' // Perform request to Nginx
                 }
@@ -50,8 +50,8 @@ pipeline {
         }
         always {
             script {
-                docker.image('myflaskapp').remove(force: true)
-                docker.image('mynginxapp').remove(force: true)
+                sudo docker.image('myflaskapp').remove(force: true)
+                sudo docker.image('mynginxapp').remove(force: true)
             }
         }
     }
