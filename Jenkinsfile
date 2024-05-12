@@ -9,7 +9,7 @@ pipeline {
         stage('Build and Push Flask Docker Image') {
             steps {
                 script {
-                    docker.build('myflaskapp')
+                    docker.build('myflaskapp', '-f myflaskapp .')
                     docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
                     docker.image('myflaskapp').push('latest')
                     }
