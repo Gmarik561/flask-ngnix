@@ -37,8 +37,8 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    sh "docker run -d -p 5000:5000 marik561/flask_ngnix python app.py"
-                    docker.image('marik561/nginx').run('-p 80:80', 'mynginxapp')
+                    sh "docker run -d -p 5000:5000 marik561/flask_ngnix:latest_myflaskapp python app.py"
+                    sh "docker run -d -p 80:80 marik561/nginx:latest_NGINX mynginxapp"
                    
 
                     sleep 60 // Wait for containers to start
