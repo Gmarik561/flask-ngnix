@@ -11,48 +11,41 @@ pipeline {
                 script {
                     docker.build('myflaskapp', '-f myflaskapp .')
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    docker tag myflaskapp:latest marik561/flask_ngnix:latest
-                    docker push marik561/myflaskapp:latest
+                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                        sh "docker tag myflaskapp:latest marik561/flask_ngnix:latest_myflaskapp"
+                        sh "docker push marik561/flask_ngnix:latest_myflaskapp"
                     }
-                    //docker.withRegistry([credentialsId: 'DOCKER_HUB_CREDENTIALS', url: 'https://hub.docker.com/r/marik561/flask_ngnix']) {
-                    //docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', 'marik561','!Marik5678152')
-                    // docker.image('myflaskapp').push('latest')
-                    //}
                 }
             }
         }
         stage('Modify, Build, and Push Nginx Docker Image') {
             steps {
                 script {
-                    sh 'cp Dockerfile .'
-                    sh 'echo "proxy_pass http://myflaskapp:5000/;" >> Dockerfile'
-                    sh 'echo "add_header X-Forwarded-For $remote_addr;" >> Dockerfile'
+                    sh 'echo "ENTRYPOINT proxy_pass http://myflaskapp:5000/;" >> nginx.conf && \
+                        echo "add_header X-Forwarded-For $remote_addr;" >> nginx.conf'
+                    sh 'echo "ENTRYPOINT proxy_pass http://myflaskapp:5000/;" >> Dockerfile '//  && \ echo "add_header X-Forwarded-For $remote_addr;" >> /etc/nginx/Dockerfile'        
                     docker.build('mynginxapp', '.')
-                    docker.build('myflaskapp', '-f myflaskapp .')
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    docker tag ngnix:latest marik561/flask_ngnix:latest
-                    docker push marik561/ngnix:latest
+                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                        sh "docker tag mynginxapp:latest marik561/nginx:latest_NGINX"
+                        sh "docker push marik561/nginx:latest_NGINX"
                     }
-                    
-            
-                    
-                    
-                    
-                    //docker.withRegistry([credentialsId: 'DOCKER_HUB_CREDENTIALS', url: 'https://hub.docker.com/r/marik561/flask_ngnix']) {
-                   //docker.image('mynginxapp').push('latest')
-                    //}
                 }
             }
         }
         stage('Run Docker Containers and Test Communication') {
             steps {
                 script {
-                    docker.image('myflaskapp').run('-p  5000:5000','-d' ,'myflaskapp')
-                    docker.image('mynginxapp').run('-p 80:80','-d', 'mynginxapp')
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    sh "docker run -d -p 5000:5000 marik561/flask_ngnix python app.py"
+                    sh "docker run -d -p 80:80 marik561/nginx mynginxapp"
+
+                   
+
                     sleep 60 // Wait for containers to start
                     sh 'curl http://localhost/' // Perform request to Nginx
+                     }
                 }
             }
         }
@@ -67,8 +60,10 @@ pipeline {
         }
         always {
             script {
-                docker.image('myflaskapp:latest').remove(force: true)
-                docker.image('mynginxapp:latest').remove(force: true)
+                sh "docker rmi marik561/flask_ngnix:latest_myflaskapp"
+                sh "docker rmi marik561/nginx:latest_NGINX"
+                //docker.image('myflaskapp:latest_myflaskapp').remove(force: true)
+                //docker.image('mynginxapp:latest_NGINX').remove(force: true)
             }
         }
     }
