@@ -36,10 +36,14 @@ pipeline {
         stage('Run Docker Containers and Test Communication') {
             steps {
                 script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                     docker.image('myflaskapp:latest_myflaskapp').run('-p 5000:5000', 'myflaskapp')
                     docker.image('mynginxapp:latest_NGINX').run('-p 80:80', 'mynginxapp')
+                   
                     sleep 60 // Wait for containers to start
                     sh 'curl http://localhost/' // Perform request to Nginx
+                     }
                 }
             }
         }
@@ -54,12 +58,9 @@ pipeline {
         }
         always {
             script {
-                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                        sh "docker.image('myflaskapp:latest_myflaskapp').remove(force: true)"
-                        sh "docker.image('mynginxapp:latest_NGINX').remove(force: true)"
-                    }
-
+                
+                docker.image('myflaskapp:latest_myflaskapp').remove(force: true)
+                docker.image('mynginxapp:latest_NGINX').remove(force: true)
             }
         }
     }
