@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     docker.build('myflaskapp', '-f myflaskapp .')
-                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
+                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', 'marik561','!Marik5678152') {//DOCKER_HUB_CREDENTIALS
                     docker.image('myflaskapp').push('latest')
                     }
                 }
@@ -23,7 +23,7 @@ pipeline {
                     sh 'echo "proxy_pass http://myflaskapp:5000/;" >> Dockerfile'
                     sh 'echo "add_header X-Forwarded-For $remote_addr;" >> Dockerfile'
                     docker.build('mynginxapp', '.')
-                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', DOCKER_HUB_CREDENTIALS) {
+                    docker.withRegistry('https://hub.docker.com/r/marik561/flask_ngnix', 'marik561','!Marik5678152') {
                     docker.image('mynginxapp').push('latest')
                     }
                 }
@@ -49,7 +49,7 @@ pipeline {
             echo 'One or more stages failed!'
         }
         always {
-           script {
+            script {
                 docker.image('myflaskapp:latest').remove(force: true)
                 docker.image('mynginxapp:latest').remove(force: true)
             }
