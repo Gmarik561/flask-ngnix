@@ -40,11 +40,10 @@ pipeline {
                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                     sh "docker run -d -p 5000:5000 marik561/flask_ngnix python app.py"
                     sh "docker run -d -p 80:80 marik561/nginx mynginxapp"
-
                    
 
                     sleep 60 // Wait for containers to start
-                    sh 'curl http://myflaskapp:5000/' // Perform request to Nginx
+                    sh 'curl http://localhost/:5000' // Perform request to Nginx
                      }
                 }
             }
