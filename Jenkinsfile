@@ -54,8 +54,12 @@ pipeline {
         }
         always {
             script {
-                docker.image('myflaskapp:latest_myflaskapp').remove(force: true)
-                docker.image('mynginxapp:latest_NGINX').remove(force: true)
+                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                        sh "docker.image('myflaskapp:latest_myflaskapp').remove(force: true)"
+                        sh "docker.image('mynginxapp:latest_NGINX').remove(force: true)"
+                    }
+
             }
         }
     }
