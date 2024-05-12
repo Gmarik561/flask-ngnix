@@ -49,7 +49,7 @@ pipeline {
             echo 'One or more stages failed!'
         }
         always {
-            script script {
+           script {
                 docker.image('myflaskapp:latest').remove(force: true)
                 docker.image('mynginxapp:latest').remove(force: true)
             }
