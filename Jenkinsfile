@@ -58,9 +58,10 @@ pipeline {
         }
         always {
             script {
-                
-                docker.image('myflaskapp:latest_myflaskapp').remove(force: true)
-                docker.image('mynginxapp:latest_NGINX').remove(force: true)
+                sh "docker rmi marik561/flask_ngnix:latest_myflaskapp"
+                sh "docker rmi marik561/ngnix:latest_NGINX"
+                //docker.image('myflaskapp:latest_myflaskapp').remove(force: true)
+                //docker.image('mynginxapp:latest_NGINX').remove(force: true)
             }
         }
     }
