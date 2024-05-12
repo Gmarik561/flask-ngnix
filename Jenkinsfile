@@ -21,7 +21,7 @@ pipeline {
         stage('Modify, Build, and Push Nginx Docker Image') {
             steps {
                 script {
-                    sh 'cp Dockerfile .'
+                    // sh 'cp Dockerfile .'
                     sh 'echo "proxy_pass http://myflaskapp:5000/;" >> Dockerfile'
                     sh 'echo "add_header X-Forwarded-For $remote_addr;" >> Dockerfile'
                     docker.build('mynginxapp', '.')
