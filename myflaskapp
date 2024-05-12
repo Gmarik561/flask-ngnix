@@ -17,7 +17,4 @@ EXPOSE 5000
 ENV FLASK_APP=app.py
 
 # Run app.py when the container launches
-# Define the command to run the Flask application and list Docker containers
-CMD ["flask", "run", "--host=0.0.0.0"],["bash", "-c", "python app.py && docker ps"]
-
-
+CMD ["bash", "-c", "flask run --host=0.0.0.0 && python app.py && docker ps"]
