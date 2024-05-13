@@ -35,6 +35,7 @@ pipeline {
         stage('Run Docker Containers and Test Communication') {
             steps {
                 script {
+                    
                     sh "docker network create mynetwork"
                     sh "docker run -d -p 5000:5000 --network mynetwork --name myflaskapp marik561/flask_ngnix:latest_myflaskapp python app.py"
                     
@@ -44,6 +45,7 @@ pipeline {
                     sleep 60 // Wait for containers to start
                     sh 'curl http://localhost/' // Perform request to Nginx
                      
+                }
             }
         }
     }
