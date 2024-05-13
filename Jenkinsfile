@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     
-                    sh "docker network create mynetwork"
+                   // sh "docker network create mynetwork"
                     sh "docker run -d -p 5000:5000 --network mynetwork --name myflaskapp marik561/flask_ngnix:latest_myflaskapp python app.py"
                     
                     sh "docker run -d -p 80:80 --network mynetwork --name mynginxapp marik561/nginx:latest_NGINX"
