@@ -16,9 +16,6 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 
-# Add DNS resolution for your Flask app
-# Replace "myflaskapp" with your actual Flask app hostname
-RUN echo "172.18.0.2 myflaskapp" >> /etc/hosts
-
 # Run app.py when the container launches
 CMD ["flask", "run", "--host=0.0.0.0"]
+
