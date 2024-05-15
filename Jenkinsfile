@@ -43,7 +43,7 @@ pipeline {
                    
 
                     sleep 60 // Wait for containers to start
-                    sh 'curl http://localhost/' // Perform request to Nginx
+                    sh 'curl http://myflaskapp:5000 // Perform request to Nginx
                      
                 }
             }
