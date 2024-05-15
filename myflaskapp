@@ -16,5 +16,14 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 
+# Install net-tools to use the 'ifconfig' command
+RUN apt-get update && apt-get install -y net-tools
+
+# Get the IP address of the other container dynamically
+RUN export FLASK_APP_IP=$(ifconfig eth0 | awk '/inet / {print $2}' | cut -d ":" -f 2)
+
+# Update /etc/hosts with the dynamically obtained IP address
+RUN echo "$FLASK_APP_IP myflaskapp" >> /etc/hosts
+
 # Run app.py when the container launches
 CMD ["flask", "run", "--host=0.0.0.0"]
