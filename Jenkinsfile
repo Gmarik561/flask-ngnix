@@ -21,11 +21,8 @@ pipeline {
         stage('Modify, Build, and Push Nginx Docker Image') {
             steps {
                 script {
-                   // Append the proxy_pass directive to nginx.conf
-                    sh 'echo "proxy_pass http://myflaskapp:5000/;" >> nginx.conf'
-
-                    // Append the add_header directive to nginx.conf
-                    sh 'echo "add_header X-Forwarded-For \$remote_addr;" >> nginx.conf'     
+                  
+                    //sh 'echo "ENTRYPOINT proxy_pass http://myflaskapp:5000/;" >> Dockerfile '//  && \ echo "add_header X-Forwarded-For $remote_addr;" >> /etc/nginx/Dockerfile'        
                     docker.build('mynginxapp', '.')
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
@@ -39,7 +36,7 @@ pipeline {
             steps {
                 script {
                     
-                    //sh "docker network create mynetwork"
+                   // sh "docker network create mynetwork"
                     sh "docker run -d -p 5000:5000 --network mynetwork --name myflaskapp marik561/flask_ngnix:latest_myflaskapp python app.py"
                     
                     sh "docker run -d -p 80:80 --network mynetwork --name mynginxapp marik561/nginx:latest_NGINX"
