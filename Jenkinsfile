@@ -21,10 +21,11 @@ pipeline {
         stage('Modify, Build, and Push Nginx Docker Image') {
             steps {
                 script {
-                     //# Add your custom configuration to nginx
-                    
-                    sh 'echo "RUN echo \"add_header X-Forwarded-For \$remote_addr;\" > ./nginx.conf" >> Dockerfile'
-       
+                   // Append the proxy_pass directive to nginx.conf
+                    sh 'echo "proxy_pass http://myflaskapp:5000/;" >> nginx.conf'
+
+                    // Append the add_header directive to nginx.conf
+                    sh 'echo "add_header X-Forwarded-For \$remote_addr;" >> nginx.conf'     
                     docker.build('mynginxapp', '.')
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
