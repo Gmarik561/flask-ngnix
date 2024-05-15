@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                   
-                    sh 'echo "ENTRYPOINT proxy_pass http://myflaskapp:5000/;" >> Dockerfile '//  && \ echo "add_header X-Forwarded-For $remote_addr;" >> /etc/nginx/Dockerfile'        
+                    //sh 'echo "ENTRYPOINT proxy_pass http://myflaskapp:5000/;" >> Dockerfile '//  && \ echo "add_header X-Forwarded-For $remote_addr;" >> /etc/nginx/Dockerfile'        
                     docker.build('mynginxapp', '.')
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
